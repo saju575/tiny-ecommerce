@@ -13,3 +13,9 @@ exports.MONGODB_URL = process.env.MONGODB_URL;
     jwt activation key for signup
 */
 exports.JWT_ACTIVATION_KEY = process.env.JWT_ACTIVATION_KEY;
+
+/* 
+    mail send username and password
+*/
+exports.SMTP_USER_NAME = process.env.SMTP_EMAIL;
+exports.SMTP_PASSWORD = process.env.SMTP_EMAIL_PASS;
