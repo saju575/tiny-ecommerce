@@ -1,8 +1,9 @@
 const createHttpError = require("http-errors");
 const User = require("../../models/user.model");
 const { createJWTToken } = require("../../helper/jwt.helper");
-const { JWT_ACTIVATION_KEY } = require("../../secret");
+const { JWT_ACTIVATION_KEY, CLIENT_URL } = require("../../secret");
 const { successResponse } = require("../response/response.controller");
+const { sendEmailWithNodemailer } = require("../../helper/emailSend.helper");
 
 /* 
     process-registration controller
@@ -24,6 +25,25 @@ exports.processRegistration = async (req, res, next) => {
       JWT_ACTIVATION_KEY,
       "10m"
     );
+
+    //prepare email data
+    const emailData = {
+      email,
+      subject: "Account activation mail",
+      html: `
+        <h2>Hello ${name}.</h2>
+        <p>Is it you?</p>
+        <p>Please click here to <a href="${CLIENT_URL}/verify-email/${jwtToken}">activate you account</a></p>
+        `,
+    };
+
+    //send email with nodemail
+    try {
+      await sendEmailWithNodemailer(emailData);
+    } catch (error) {
+      createHttpError(500, "Failed to send varification email");
+      return;
+    }
 
     //return success response
     return successResponse(res, {

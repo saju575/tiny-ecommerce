@@ -19,3 +19,8 @@ exports.JWT_ACTIVATION_KEY = process.env.JWT_ACTIVATION_KEY;
 */
 exports.SMTP_USER_NAME = process.env.SMTP_EMAIL;
 exports.SMTP_PASSWORD = process.env.SMTP_EMAIL_PASS;
+
+/* 
+    client url
+*/
+exports.CLIENT_URL = process.env.CLIENT_URL;
