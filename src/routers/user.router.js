@@ -1,5 +1,8 @@
 const express = require("express");
-const { processRegistration } = require("../controllers/user/user.controller");
+const {
+  processRegistration,
+  verifyRegistration,
+} = require("../controllers/user/user.controller");
 
 /* 
     create a new user router
@@ -16,6 +19,6 @@ userRouter.post("/process-registration", processRegistration);
     verify the registration
     verify-registration endpoint
 */
-userRouter.post("/verify-registration");
+userRouter.post("/verify-registration", verifyRegistration);
 
 module.exports = userRouter;

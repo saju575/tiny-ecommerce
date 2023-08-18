@@ -1,4 +1,6 @@
 const createHttpError = require("http-errors");
+const jwt = require("jsonwebtoken");
+
 const User = require("../../models/user.model");
 const { createJWTToken } = require("../../helper/jwt.helper");
 const { JWT_ACTIVATION_KEY, CLIENT_URL } = require("../../secret");
@@ -39,7 +41,7 @@ exports.processRegistration = async (req, res, next) => {
 
     //send email with nodemail
     try {
-      await sendEmailWithNodemailer(emailData);
+      //await sendEmailWithNodemailer(emailData);
     } catch (error) {
       createHttpError(500, "Failed to send varification email");
       return;
@@ -50,6 +52,57 @@ exports.processRegistration = async (req, res, next) => {
       message: `Please go to your ${email} for completing signUp process`,
       payload: jwtToken,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* 
+  verify registration controller
+*/
+exports.verifyRegistration = async (req, res, next) => {
+  try {
+    // get the token
+    const token = req.body.token;
+
+    //token is not provided
+    if (!token) {
+      throw createHttpError(404, "Token missing");
+    }
+
+    try {
+      //decode the token
+      const decodedToken = jwt.verify(token, JWT_ACTIVATION_KEY);
+
+      if (!decodedToken) throw createHttpError(401, "User is not verified");
+
+      // check user already exists
+      const userExists = await User.exists({ email: decodedToken.email });
+
+      if (userExists) {
+        throw createHttpError(
+          409,
+          "User with this email already exists. Please sign in."
+        );
+      }
+
+      // create new user and add to the DB
+      await User.create({ ...decodedToken, isVarified: true });
+
+      //return successful response
+      return successResponse(res, {
+        message: "User was  registered successfully",
+        statusCode: 201,
+      });
+    } catch (err) {
+      if (err.name === "TokenExpiredError") {
+        throw createHttpError(401, "Token has expired");
+      } else if (err.name === "JsonWebTokenError") {
+        throw createHttpError(401, "Invalid Token");
+      } else {
+        throw err;
+      }
+    }
   } catch (error) {
     next(error);
   }
