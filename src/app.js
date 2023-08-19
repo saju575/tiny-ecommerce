@@ -2,6 +2,7 @@ const express = require("express");
 const createHttpError = require("http-errors");
 const xssClean = require("xss-clean");
 const cookies = require("cookie-parser");
+const cors = require("cors");
 
 const { errorResponse } = require("./controllers/response/response.controller");
 const userRouter = require("./routers/user.router");
@@ -15,6 +16,7 @@ const app = express();
 /* 
     middlewares
 */
+app.use(cors());
 app.use(xssClean());
 app.use(cookies());
 app.use(express.json());

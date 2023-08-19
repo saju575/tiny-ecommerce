@@ -5,6 +5,7 @@ const {
   getUser,
 } = require("../controllers/user/user.controller");
 const { isLogOut, isLogin } = require("../middlewares/auth.middleware");
+const { validateRegistration } = require("../validators/user.validator");
 
 /* 
     create a new user router
@@ -15,7 +16,12 @@ const userRouter = express.Router();
     process the user registration
     process-registration endpoint
 */
-userRouter.post("/process-registration", isLogOut, processRegistration);
+userRouter.post(
+  "/process-registration",
+  isLogOut,
+  validateRegistration,
+  processRegistration
+);
 
 /* 
     verify the registration
