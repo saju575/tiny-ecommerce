@@ -1,0 +1,41 @@
+const createHttpError = require("http-errors");
+const jwt = require("jsonwebtoken");
+const { JWT_ACCESS_KEY } = require("../secret");
+/* 
+    check user login
+*/
+exports.isLogin = async (req, res, next) => {
+  try {
+    const accessToken = req.cookies.accessToken;
+    if (!accessToken) {
+      throw createHttpError(401, "Access token not found. Please login");
+    }
+
+    //verify that user is valid or not
+    const decoded = await jwt.verify(accessToken, JWT_ACCESS_KEY);
+    if (!decoded) {
+      throw createHttpError(401, "Invalid access token");
+    }
+
+    req.user = decoded;
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* 
+    check user isLogout
+*/
+exports.isLogOut = async (req, res, next) => {
+  try {
+    const accessToken = req.cookies.accessToken;
+    if (accessToken) {
+      throw createHttpError(400, "User already logged in");
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
