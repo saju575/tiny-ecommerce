@@ -6,6 +6,7 @@ const { createJWTToken } = require("../../helper/jwt.helper");
 const { JWT_ACTIVATION_KEY, CLIENT_URL } = require("../../secret");
 const { successResponse } = require("../response/response.controller");
 const { sendEmailWithNodemailer } = require("../../helper/emailSend.helper");
+const { findWithId } = require("../../services/findItem.service");
 
 /* 
   registration process controller
@@ -103,6 +104,31 @@ exports.verifyRegistration = async (req, res, next) => {
         throw err;
       }
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* 
+  get a user information
+*/
+exports.getUser = async (req, res, next) => {
+  try {
+    // get the id
+    const userId = req.params.id;
+
+    //option
+    const options = {
+      password: 0,
+    };
+
+    //get user
+    const user = await findWithId(User, userId, options);
+
+    // return success response
+    return successResponse(res, {
+      payload: user,
+    });
   } catch (error) {
     next(error);
   }
