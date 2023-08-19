@@ -8,7 +8,7 @@ exports.isLogin = async (req, res, next) => {
   try {
     const accessToken = req.cookies.accessToken;
     if (!accessToken) {
-      throw createHttpError(401, "Access token not found. Please login");
+      throw createHttpError(404, "Access token not found. Please login");
     }
 
     //verify that user is valid or not
@@ -32,6 +32,22 @@ exports.isLogOut = async (req, res, next) => {
     const accessToken = req.cookies.accessToken;
     if (accessToken) {
       throw createHttpError(400, "User already logged in");
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* 
+    isAdmin or not
+*/
+exports.isAdmin = async (req, res, next) => {
+  try {
+    //check admin permissions
+    if (!req.user.isAdmin) {
+      throw createHttpError(400, "You are not a admin");
     }
 
     next();
