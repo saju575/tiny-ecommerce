@@ -68,3 +68,16 @@ exports.handleLogin = async (req, res, next) => {
 /* 
    User logout
 */
+exports.handleLogOut = (req, res, next) => {
+  try {
+    //clear cookies
+    res.clearCookie("accessToken");
+
+    //successFullResponse
+    return successResponse(res, {
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
