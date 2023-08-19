@@ -15,6 +15,11 @@ exports.MONGODB_URL = process.env.MONGODB_URL;
 exports.JWT_ACTIVATION_KEY = process.env.JWT_ACTIVATION_KEY;
 
 /* 
+    jwt access key
+*/
+exports.JWT_ACCESS_KEY = process.env.JWT_ACCESS_KEY;
+
+/* 
     mail send username and password
 */
 exports.SMTP_USER_NAME = process.env.SMTP_EMAIL;

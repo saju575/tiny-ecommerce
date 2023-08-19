@@ -8,7 +8,7 @@ const { successResponse } = require("../response/response.controller");
 const { sendEmailWithNodemailer } = require("../../helper/emailSend.helper");
 
 /* 
-    process-registration controller
+  registration process controller
 */
 exports.processRegistration = async (req, res, next) => {
   try {
