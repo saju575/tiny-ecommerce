@@ -38,24 +38,29 @@ const userSchema = new Schema(
       type: String,
       default: "image.png",
     },
-    gender: {
-      type: String,
-      enum: ["Male", "Female", "Others"],
-    },
-    address: {
-      type: String,
-    },
-    phone: {
-      type: String,
-    },
+
     isAdmin: {
       type: Boolean,
       default: false,
     },
-    isVarified: {
-      type: Boolean,
-      default: false,
-    },
+    cart: [
+      {
+        productId: {
+          type: Schema.Types.ObjectId,
+          ref: "Product", // Reference to the Product model
+          required: true,
+        },
+        color: {
+          type: String,
+        },
+        size: {
+          type: String,
+        },
+        quantity: {
+          type: Number,
+        },
+      },
+    ],
     isBanned: {
       type: Boolean,
       default: false,
@@ -67,6 +72,10 @@ const userSchema = new Schema(
 /* 
     make a model name "User"
 */
+userSchema.methods.setCart = function (newCart) {
+  this.cart = newCart;
+  return this.save();
+};
 const User = model("User", userSchema);
 
 module.exports = User;

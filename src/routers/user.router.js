@@ -1,11 +1,11 @@
 const express = require("express");
 const {
   processRegistration,
-  verifyRegistration,
+
   getUser,
+  activateAccount,
 } = require("../controllers/user/user.controller");
 const { isLogOut, isLogin } = require("../middlewares/auth.middleware");
-const { validateRegistration } = require("../validators/user.validator");
 
 /* 
     create a new user router
@@ -19,7 +19,7 @@ const userRouter = express.Router();
 userRouter.post(
   "/process-registration",
   isLogOut,
-  validateRegistration,
+
   processRegistration
 );
 
@@ -27,11 +27,11 @@ userRouter.post(
     verify the registration
     verify-registration endpoint
 */
-userRouter.post("/verify-registration", isLogOut, verifyRegistration);
+userRouter.get("/activate-user/:id/:token", isLogOut, activateAccount);
 
 /* 
     get a user info endpoint
 */
-userRouter.get("/:id", isLogin, getUser);
+userRouter.get("/profile", isLogin, getUser);
 
 module.exports = userRouter;

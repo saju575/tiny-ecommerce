@@ -7,6 +7,8 @@ const cors = require("cors");
 const { errorResponse } = require("./controllers/response/response.controller");
 const userRouter = require("./routers/user.router");
 const authRouter = require("./routers/auth.router");
+const cartRouter = require("./routers/cart.router");
+const productRouter = require("./routers/product.router");
 
 /* 
     making app
@@ -20,7 +22,7 @@ app.use(cors());
 app.use(xssClean());
 app.use(cookies());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 /* 
   end point using
@@ -36,6 +38,9 @@ app.use("/api/users", userRouter);
 */
 app.use("/api/user/auth", authRouter);
 
+app.use("/api/cart", cartRouter);
+
+app.use("/api/products", productRouter);
 /*
     Client error handler
  */

@@ -37,11 +37,11 @@ exports.handleLogin = async (req, res, next) => {
     }
 
     //get name, email, isAdmin and isVarified
-    const { name, email: userEmail, isAdmin, isVarified } = user._doc;
+    const { _id, name, email: userEmail, isAdmin, isVarified } = user._doc;
 
     //create a jwt token
     const accessToken = createJWTToken(
-      { name, email: userEmail, isAdmin, isVarified },
+      { _id, name, email: userEmail, isAdmin, isVarified },
       JWT_ACCESS_KEY,
       "10d"
     );

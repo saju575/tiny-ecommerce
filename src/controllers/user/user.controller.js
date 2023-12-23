@@ -1,12 +1,13 @@
 const createHttpError = require("http-errors");
 const jwt = require("jsonwebtoken");
-
+const crypto = require("crypto");
 const User = require("../../models/user.model");
 const { createJWTToken } = require("../../helper/jwt.helper");
 const { JWT_ACTIVATION_KEY, CLIENT_URL } = require("../../secret");
 const { successResponse } = require("../response/response.controller");
 const { sendEmailWithNodemailer } = require("../../helper/emailSend.helper");
 const { findWithId } = require("../../services/findItem.service");
+const Token = require("../../models/token.model");
 
 /* 
   registration process controller
@@ -26,8 +27,14 @@ exports.processRegistration = async (req, res, next) => {
     const jwtToken = createJWTToken(
       { name, email, password },
       JWT_ACTIVATION_KEY,
-      "10m"
+      "1d"
     );
+
+    // Save the token to the database
+    const token = await new Token({
+      token: crypto.randomBytes(32).toString("hex"),
+      jwtToken,
+    }).save();
 
     //prepare email data
     const emailData = {
@@ -36,13 +43,13 @@ exports.processRegistration = async (req, res, next) => {
       html: `
         <h2>Hello ${name}.</h2>
         <p>Is it you?</p>
-        <p>Please click here to <a href="${CLIENT_URL}/verify-email/${jwtToken}">activate you account</a></p>
+        <p>Please click here to <a href="${CLIENT_URL}/account-verify/${token._id}/${token.token}">activate you account</a></p>
         `,
     };
 
     //send email with nodemail
     try {
-      //await sendEmailWithNodemailer(emailData);
+      await sendEmailWithNodemailer(emailData);
     } catch (error) {
       createHttpError(500, "Failed to send varification email");
       return;
@@ -58,53 +65,59 @@ exports.processRegistration = async (req, res, next) => {
   }
 };
 
-/* 
-  verify registration controller
-*/
-exports.verifyRegistration = async (req, res, next) => {
+/**
+ * Activates a user account.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.params - The request parameters.
+ * @param {string} req.params.id - The ID of the token.
+ * @param {string} req.params.token - The token.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
+exports.activateAccount = async (req, res, next) => {
   try {
-    // get the token
-    const token = req.body.token;
+    // Find the token in the database
+    const token = await Token.findOne({
+      _id: req.params.id,
+      token: req.params.token,
+    });
 
-    //token is not provided
+    // If token is not found, throw an error
     if (!token) {
-      throw createHttpError(404, "Token missing");
+      throw createHttpError(404, "Invalid Link");
     }
 
-    try {
-      //decode the token
-      const decodedToken = jwt.verify(token, JWT_ACTIVATION_KEY);
+    // Verify the JWT token
+    const decodedInfo = jwt.verify(token.jwtToken, JWT_ACTIVATION_KEY);
 
-      if (!decodedToken) throw createHttpError(401, "User is not verified");
-
-      // check user already exists
-      const userExists = await User.exists({ email: decodedToken.email });
-
-      if (userExists) {
-        throw createHttpError(
-          409,
-          "User with this email already exists. Please sign in."
-        );
-      }
-
-      // create new user and add to the DB
-      await User.create({ ...decodedToken, isVarified: true });
-
-      //return successful response
-      return successResponse(res, {
-        message: "User was  registered successfully",
-        statusCode: 201,
-      });
-    } catch (err) {
-      if (err.name === "TokenExpiredError") {
-        throw createHttpError(401, "Token has expired");
-      } else if (err.name === "JsonWebTokenError") {
-        throw createHttpError(401, "Invalid Token");
-      } else {
-        throw err;
-      }
+    // If token is invalid, throw an error
+    if (!decodedInfo) {
+      throw createHttpError(404, "Invalid Link");
     }
+
+    // Check if the user email already exists
+    const isEmailExist = await User.exists({ email: decodedInfo.email });
+
+    // If email already exists, throw an error
+    if (isEmailExist) {
+      throw createHttpError(404, "Invalid Link");
+    }
+
+    // Create a new user with the decoded information
+    await User.create(decodedInfo);
+
+    // Delete the token from the database
+    await Token.findByIdAndDelete(token._id);
+
+    // Return a success response
+    return successResponse(res, {
+      statusCode: 201,
+
+      message: `Email verified successfully`,
+    });
   } catch (error) {
+    // Pass the error to the next middleware
     next(error);
   }
 };
@@ -115,7 +128,7 @@ exports.verifyRegistration = async (req, res, next) => {
 exports.getUser = async (req, res, next) => {
   try {
     // get the id
-    const userId = req.params.id;
+    const userId = req.user._id;
 
     //option
     const options = {
@@ -123,7 +136,9 @@ exports.getUser = async (req, res, next) => {
     };
 
     //get user
-    const user = await findWithId(User, userId, options);
+    const user = await await User.findById(userId, options)
+      .populate("cart.productId", "title imageUrl") // Populate the 'productId' field from the 'Product' model, including only 'name' and 'image' fields
+      .exec();
 
     // return success response
     return successResponse(res, {
