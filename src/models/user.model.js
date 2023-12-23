@@ -50,6 +50,8 @@ const userSchema = new Schema(
           ref: "Product", // Reference to the Product model
           required: true,
         },
+        title: { type: String },
+        imageUrl: { type: String },
         color: {
           type: String,
         },

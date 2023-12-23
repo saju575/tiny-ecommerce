@@ -50,7 +50,8 @@ exports.handleLogin = async (req, res, next) => {
     res.cookie("accessToken", accessToken, {
       maxAge: 60 * 60 * 24 * 10 * 1000,
       httpOnly: true,
-      sameSite: "none",
+      sameSite: "None",
+      secure: true,
     });
 
     //get user without password

@@ -137,8 +137,7 @@ exports.getUser = async (req, res, next) => {
 
     //get user
     const user = await await User.findById(userId, options)
-      .populate("cart.productId", "title imageUrl") // Populate the 'productId' field from the 'Product' model, including only 'name' and 'image' fields
-      .exec();
+    .exec();
 
     // return success response
     return successResponse(res, {
