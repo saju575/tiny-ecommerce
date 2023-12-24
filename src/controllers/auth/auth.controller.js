@@ -72,7 +72,11 @@ exports.handleLogin = async (req, res, next) => {
 exports.handleLogOut = (req, res, next) => {
   try {
     //clear cookies
-    res.clearCookie("accessToken");
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+    });
 
     //successFullResponse
     return successResponse(res, {
