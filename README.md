@@ -159,3 +159,29 @@ Request Body
   ]
 }
 ```
+
+# Environment Variables
+
+The following environment variables are required for configuring the Tiny-Ecommerce server. Please replace the placeholder values with your actual configuration.
+
+```plaintext
+# .env
+
+SERVER_PORT=5000
+MONGODB_URL=mongodb://localhost:27017/tiny-ecomarce
+JWT_ACTIVATION_KEY=your_activation_key_here
+JWT_ACCESS_KEY=your_access_key_here
+SMTP_EMAIL=your_email@example.com
+SMTP_EMAIL_PASS=your_email_password_here
+CLIENT_URL=http://localhost:5173
+```
+
+## Variable Descriptions:
+
+    - SERVER_PORT: The port on which the server will run.
+    - MONGODB_URL: The URL for connecting to your MongoDB database.
+    - JWT_ACTIVATION_KEY: The secret key for JWT token activation.
+    - JWT_ACCESS_KEY: The secret key for JWT token access.
+    - SMTP_EMAIL: Your email address for SMTP server configuration.
+    - SMTP_EMAIL_PASS: Your email password for SMTP server configuration.
+    - CLIENT_URL: The URL of your client application.
