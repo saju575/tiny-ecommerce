@@ -33,3 +33,15 @@ exports.getAllProducts = async (req, res, next) => {
     next(error);
   }
 };
+
+/** */
+exports.getSingleProducts = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    return successResponse(res, {
+      payload: product,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
