@@ -4,11 +4,9 @@
 
 https://tiny-ecommerce.onrender.com/api
 
-## Product Endpoints
+## 1.Get All Products
 
-### Get All Products
-
-#### Endpoint
+### Endpoint
 
 GET /products
 
@@ -20,9 +18,9 @@ Retrieve a list of all products available.
 
 https://tiny-ecommerce.onrender.com/api/products
 
-### Get Single Product
+## 2.Get Single Product
 
-#### Endpoint
+### Endpoint
 
 GET /products/:id
 
@@ -38,9 +36,9 @@ Retrieve details of a specific product.
 
 https://tiny-ecommerce.onrender.com/api/products/658864f4b30f6d0a92963278
 
-### Create Product
+## 3.Create Product
 
-#### Endpoint
+### Endpoint
 
 POST /products/create
 
@@ -62,7 +60,7 @@ Create a new product.
 }
 ```
 
-## User Authentication
+## 4.User Authentication
 
 ### Login
 
@@ -82,7 +80,7 @@ Request Body
 }
 ```
 
-## Process Registration
+## 5.Process Registration
 
 ### Endpoint
 
@@ -102,7 +100,7 @@ Request Body
 
 ```
 
-## Activate User Account
+## 6.Activate User Account
 
 ### Endpoint
 
@@ -118,7 +116,7 @@ Activate a user account by clicking on the activation link sent to the user's em
 - token (string): Activation token.
 -
 
-## User Profile
+## 7.User Profile
 
 ### Endpoint
 
@@ -129,7 +127,7 @@ Retrieve the profile information of the logged-in user.
 
 Example https://tiny-ecommerce.onrender.com/api/users/profile
 
-## Logout
+## 8.Logout
 
 ### Endpoint
 
@@ -138,7 +136,7 @@ POST /user/auth/logout
 Description
 Clear the user's session by logging them out.
 
-## Set Cart
+## 9.Set Cart
 
 ### Endpoint
 
